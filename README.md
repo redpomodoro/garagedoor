@@ -29,4 +29,3 @@ Yet another garage door Arduino project, unlike most projects this project contr
 
 
 
-

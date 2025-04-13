@@ -1,3 +1,5 @@
+// Arduino Nano ESP32
+
 #include <SPI.h>
 #include <WiFiNINA.h>
 #include <WiFiUdp.h>
@@ -15,8 +17,8 @@ const long relay_delay          = 100;          // time period to active door op
 const long execution_delay      = 20L * 1000L;  // delay to wait for the door to fully open or close
 const long sensor_state_delay   = 2L * 1000L;   // delay to ignore contact sensor when contact sensor state changed
 
-const char ssid[] = SECRET_SSID;        // your network SSID (name)
-const char pass[] = SECRET_PASS;        // your network password (use for WPA, or use as key for WEP)
+const char ssid[] = SECRET_WIFI_SSID;        // your network SSID (name)
+const char pass[] = SECRET_WIFI_PASS;        // your network password (use for WPA, or use as key for WEP)
 int status = WL_IDLE_STATUS;            // the Wifi radio's status
 
 const char broker[]             = SECRET_MQTT_SERVER;
