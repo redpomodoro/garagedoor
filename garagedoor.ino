@@ -68,7 +68,7 @@ void setup() {
   
   // check WiFi firmware
   String fv = WiFi.firmwareVersion();
-  if (fv < WIFI_FIRMWARE_LATEST_VERSION) {
+  if (compareVersions(fv, WIFI_FIRMWARE_LATEST_VERSION) < 0) {
     Serial.println(F("Please upgrade the firmware"));
   }
   
@@ -87,7 +87,7 @@ void setup() {
   // Get device id and set MQTT topics
   byte mac[6];
   WiFi.macAddress(mac);
-  String mac_address = mac2String(mac);
+  mac_address = mac2String(mac);
 
   String device_id = device_prefix + mac_address;
   topic_action = topic_root + "/cover/" + device_id + "/set";
@@ -241,6 +241,26 @@ void trigger_relay(int relay_id, String new_state) {
     digitalWrite(relay_id, LOW);
     state = new_state;
     change_start = now;
+}
+
+// Numerically compares dotted version strings (e.g. "1.9.0" vs "1.10.0"), unlike lexicographic String comparison.
+int compareVersions(String a, String b) {
+  int ai = 0, bi = 0;
+  while (ai < (int)a.length() || bi < (int)b.length()) {
+    int aNum = 0, bNum = 0;
+    while (ai < (int)a.length() && a[ai] != '.') {
+      aNum = aNum * 10 + (a[ai] - '0');
+      ai++;
+    }
+    while (bi < (int)b.length() && b[bi] != '.') {
+      bNum = bNum * 10 + (b[bi] - '0');
+      bi++;
+    }
+    if (aNum != bNum) return aNum < bNum ? -1 : 1;
+    ai++; // skip '.'
+    bi++;
+  }
+  return 0;
 }
 
 String mac2String(byte ar[]) {
