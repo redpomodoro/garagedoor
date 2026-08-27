@@ -95,7 +95,7 @@ void setup() {
   topic_config = topic_root + "/cover/" + device_id + "/config";
   topic_availability = topic_root + "/cover/" + device_id + "/availability";
 
-  config = "{\"device_class\":\"garage\",\"suggested_area\":\"garage\",\"name\":\"" + device_id + "\",\"unique_id\":\"" + device_id + "\",\"object_id\":\"" + device_id + "\",\"command_topic\":\"" + topic_action + "\",\"state_topic\": \"" + topic_state + + "\",\"availability_topic\":\"" + topic_availability + "\"}";
+  config = "{\"device_class\":\"garage\",\"suggested_area\":\"garage\",\"name\":\"" + device_id + "\",\"unique_id\":\"" + device_id + "\",\"object_id\":\"" + device_id + "\",\"command_topic\":\"" + topic_action + "\",\"state_topic\": \"" + topic_state + "\",\"availability_topic\":\"" + topic_availability + "\"}";
 
   mqttClient.setId(device_id);
   mqttClient.setUsernamePassword(SECRET_MQTT_USER, SECRET_MQTT_PASS);
@@ -139,12 +139,13 @@ void loop() {
     Serial.println(" bytes:");
 
     String action;
+    action.reserve(messageSize);
     char c;
 
     // use the Stream interface to print the contents
     while (mqttClient.available()) {
       c = mqttClient.read();
-      action = String(action + c);
+      action += c;
     }
     action.toLowerCase();
     Serial.println("action: " + action);
