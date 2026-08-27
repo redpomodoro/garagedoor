@@ -162,39 +162,40 @@ void loop() {
         trigger_relay(relay_open_pin, "stopping");
       }
     }
-  } else {
-    // read new contact state
-    contact_state  = digitalRead(contact_pin); 
-    if (last_contact_state == LOW && contact_state == HIGH) { // state change: LOW -> HIGH
-      if (change_start==0) {
-          // triggered by external button or remote
-          Serial.println("The door-opening detected by contact sensor");
-          state = "opening";
-          change_start = now;
-      } else if (last_state != "opening") {
-        Serial.println("Unexpected last state with door open. last state:" + last_state);
-      }
-    } else if (last_contact_state == HIGH && contact_state == LOW) { // state change: HIGH -> LOW
-        Serial.println("The door-closed is detected");
-        state = "closed";
-        delay_loop = sensor_state_delay;
-        change_start = 0;
-    } else if (last_state == "stopping") {
+  }
+
+  // read new contact state - always, so timeout/expiry handling below isn't
+  // starved when an MQTT message was also received this iteration
+  contact_state  = digitalRead(contact_pin);
+  if (last_contact_state == LOW && contact_state == HIGH) { // state change: LOW -> HIGH
+    if (change_start==0) {
+        // triggered by external button or remote
+        Serial.println("The door-opening detected by contact sensor");
+        state = "opening";
+        change_start = now;
+    } else if (last_state != "opening") {
+      Serial.println("Unexpected last state with door open. last state:" + last_state);
+    }
+  } else if (last_contact_state == HIGH && contact_state == LOW) { // state change: HIGH -> LOW
+      Serial.println("The door-closed is detected");
+      state = "closed";
+      delay_loop = sensor_state_delay;
+      change_start = 0;
+  } else if (last_state == "stopping") {
+      state = get_door_state();
+      Serial.println(last_state + " expired. state set to: " + state);
+      change_start = 0;
+  } else if (last_state == "opening" || last_state == "closing") {
+    if (now > change_start) {
+      if ((unsigned long)(now - change_start) >= execution_delay) {
         state = get_door_state();
         Serial.println(last_state + " expired. state set to: " + state);
         change_start = 0;
-    } else if (last_state == "opening" || last_state == "closing") {
-      if (now > change_start) {
-        if ((unsigned long)(now - change_start) >= execution_delay) {
-          state = get_door_state();
-          Serial.println(last_state + " expired. state set to: " + state);
-          change_start = 0;
-        }
-      } else {
-        // overflow given more time
-        change_start = now;
-        Serial.println("change execution overflow");
       }
+    } else {
+      // overflow given more time
+      change_start = now;
+      Serial.println("change execution overflow");
     }
   }
   
