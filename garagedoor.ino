@@ -1,8 +1,9 @@
-// Arduino Nano ESP32
+// Arduino MKR 1010 WiFi
 
 #include <SPI.h>
 #include <WiFiNINA.h>
 #include <WiFiUdp.h>
+#include <ArduinoOTA.h>
 #include <ArduinoMqttClient.h>
 #include "arduino_secrets.h"
 
@@ -102,9 +103,14 @@ void setup() {
 
   mqttClient.setId(device_id);
   mqttClient.setUsernamePassword(SECRET_MQTT_USER, SECRET_MQTT_PASS);
+
+  // Enable OTA sketch updates (Arduino IDE: select this device under Network Ports)
+  ArduinoOTA.begin(WiFi.localIP(), device_id.c_str(), SECRET_OTA_PASSWORD, InternalStorage);
 }
 
-void loop() {  
+void loop() {
+  ArduinoOTA.poll();
+
   delay_loop = 0;
   last_state = state;
   last_contact_state = contact_state;

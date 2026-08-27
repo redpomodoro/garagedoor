@@ -26,6 +26,9 @@ Yet another garage door Arduino project, unlike most projects this project contr
 - Hormann Suprametic Garage Door
 - Arduino MKR 1010 WiFi
 
+### OTA updates:
+The sketch can be updated wirelessly using the `ArduinoOTA` library. In the Arduino IDE, select the device under Tools > Port > Network Ports (it advertises using its `gdctrl_<mac>` device id) and upload as usual. Set a real value for `SECRET_OTA_PASSWORD` in `arduino_secrets.h` before flashing. Requires the `ArduinoOTA` library to be installed.
+
 
 
 
