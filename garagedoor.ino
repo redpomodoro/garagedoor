@@ -53,6 +53,9 @@ void setup() {
   pinMode(relay_open_pin, OUTPUT);
   pinMode(relay_close_pin, OUTPUT);
 
+  contact_state = digitalRead(contact_pin);
+  last_contact_state = contact_state;
+
   state = get_door_state();
   last_state = state;
 
